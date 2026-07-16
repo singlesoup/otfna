@@ -1,3 +1,8 @@
+# build output
+.next/
+*.tsbuildinfo
+package-lock.json
+
 # deps / caches
 node_modules/
 .npm-cache/
@@ -22,3 +27,6 @@ skills-lock.json
 # os
 .DS_Store
 Thumbs.db
+
+# hermes temp
+.hermes-tmp*/
