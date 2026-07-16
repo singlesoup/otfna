@@ -1,0 +1,24 @@
+# deps / caches
+node_modules/
+.npm-cache/
+.npm-cache-a/
+.npm-cache-b/
+.npm-cache-c/
+
+# local working artifacts (not for build)
+tmp/
+*.pdf
+
+# local research archive (kept locally, not pushed)
+PRD-OTFNA.md
+VALIDATION-PLAN-OTFNA.md
+CHANGELOG-OTFNA.md
+
+# agent tooling
+.agents/
+skills-lock.json
+.claude/
+
+# os
+.DS_Store
+Thumbs.db
