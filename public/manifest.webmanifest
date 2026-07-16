@@ -1,0 +1,12 @@
+{
+  "name": "OTFNA — Only The Food Never Arrives",
+  "short_name": "OTFNA",
+  "description": "The full food-ordering ritual, without a real order or payment.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFC000",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

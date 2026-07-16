@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --mango: #ffc000;
+  --charcoal: #1a1a1a;
+  --savings: #2e7d32;
+  --canvas: #f6f6f3;
+}
+
+* { box-sizing: border-box; }
+html { background: #ebeae5; color: var(--charcoal); }
+body { margin: 0; font-family: "Figtree", sans-serif; background: #ebeae5; }
+h1, h2, h3, h4 { font-family: "Manrope", sans-serif; }
+button, input, textarea { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+::selection { background: #ffe58a; color: #1a1a1a; }
+
+.app-shell {
+  width: 100%;
+  max-width: 30rem;
+  min-height: 100dvh;
+  margin-inline: auto;
+  background: #fff;
+  position: relative;
+  overflow-x: clip;
+  box-shadow: 0 0 70px rgba(26, 26, 26, .12);
+}
+
+.scrollbar-none { scrollbar-width: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.safe-bottom { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+.page-enter { animation: rise .42s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

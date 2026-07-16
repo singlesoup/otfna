@@ -1,0 +1,50 @@
+export type DeliveryMode = "vip" | "standard";
+export type PaymentMethod = "UPI" | "Card" | "COD" | "Wallet";
+
+export type Dish = {
+  id: string;
+  name: string;
+  price: number;
+  rating: number;
+  veg: boolean;
+  image: string;
+  description: string;
+};
+
+export type Restaurant = {
+  id: string;
+  name: string;
+  category: string;
+  cuisines: string[];
+  rating: number;
+  eta: string;
+  offer: string;
+  image: string;
+  badge: string;
+  dishes: Dish[];
+};
+
+export type CartLine = { restaurantId: string; dishId: string; quantity: number };
+
+export type Bill = {
+  itemTotal: number;
+  deliveryFee: number;
+  taxes: number;
+  discount: number;
+  total: number;
+};
+
+export type DemoOrder = {
+  id: string;
+  restaurantId: string;
+  restaurantName: string;
+  category: string;
+  lines: CartLine[];
+  bill: Bill;
+  mode: DeliveryMode;
+  payment: PaymentMethod;
+  placedAt: string;
+  durationSeconds: number;
+  completedAt?: string;
+  feedback?: "yes" | "no";
+};
