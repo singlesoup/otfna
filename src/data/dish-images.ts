@@ -1,66 +1,69 @@
-// Per-dish image URLs (Unsplash, hotlink-friendly, free tier).
-// Every URL below was verified to return HTTP 200 (GET).
-const U = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=900&q=80`;
+// Per-dish image URLs.
+// - Most dishes: verified Unsplash/Pexels food photos (all checked HTTP 200).
+// - 10 specialty dishes: locally-hosted PNGs in /public/dishes (downloaded from
+//   Emergent's generated specialty shots) so the app has no external dependency.
+// Every entry below was reachability-verified. No two dishes intentionally share an image.
+const LOCAL = (name: string) => `/dishes/${name}.png`;
 
 export const dishImages: Record<string, string> = {
   // Biryani Express
-  "be-mutton": U("1563379091339-03b21ab4a4f8"), // mutton biryani
-  "be-chicken": U("1604908176997-125f25cc6f3d"), // chicken biryani
-  "be-veg": U("1516714435131-44d6b64dc6a2"), // veg biryani (safe fallback below)
-  "be-salan": U("1631292784640-2b24be784d5d"), // mirchi salan curry
-  "be-raita": U("1639024471283-03518883512d"), // boondi raita
+  "be-mutton": LOCAL("mutton_biryani"),
+  "be-chicken": "https://images.pexels.com/photos/34484975/pexels-photo-34484975.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "be-veg": LOCAL("veg_biryani"), // replaced (was small/boy image)
+  "be-salan": LOCAL("be-salan"),
+  "be-raita": LOCAL("boondi_raita"), // replaced (was wrong)
   // The Pizza Project
-  "pp-margherita": U("1574071318508-1cdbab80d002"),
-  "pp-loaded": U("1513104890138-7c749659a591"),
-  "pp-garlic": U("1573080496219-bb080dd4f877"), // garlic bread
-  "pp-burst": U("1513104890138-7c749659a591"), // cheese burst (reuse pizza)
-  "pp-fries": U("1573080496219-bb080dd4f877"), // fries
+  "pp-margherita": "https://images.pexels.com/photos/31596394/pexels-photo-31596394.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "pp-loaded": "https://images.unsplash.com/photo-1613564834361-9436948817d1?auto=format&fit=crop&w=900&q=80",
+  "pp-garlic": "https://images.pexels.com/photos/13062441/pexels-photo-13062441.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "pp-burst": "https://images.pexels.com/photos/13724267/pexels-photo-13724267.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "pp-fries": "https://images.pexels.com/photos/35123981/pexels-photo-35123981.jpeg?auto=compress&cs=tinysrgb&w=900",
   // Kebab Junction
-  "kj-seekh": U("1529006557810-274b9b2fc783"), // seekh kebab
-  "kj-shawarma": U("1565299624946-b28f40a0ae38"), // shawarma
-  "kj-rumali": U("1626700051175-6818013e1d4f"), // wrap
-  "kj-tangdi": U("1599487488170-d11ec9c172f0"), // tangdi kebab
-  "kj-mutton": U("1601050690597-df0568f70950"), // mutton roll
+  "kj-seekh": "https://images.unsplash.com/photo-1781332143834-19a40f746cd9?auto=format&fit=crop&w=900&q=80",
+  "kj-shawarma": "https://images.pexels.com/photos/5779364/pexels-photo-5779364.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "kj-rumali": LOCAL("chicken_rumali_wrap"), // replaced (was wrong)
+  "kj-tangdi": LOCAL("kj-tangdi"),
+  "kj-mutton": LOCAL("kj-mutton"),
   // Wok & Momos
-  "wm-garlic": U("1585032226651-759b368d7246"), // noodles
-  "wm-spring": U("1607330289024-1535c6b4e1c1"), // spring roll
-  "wm-momos": U("1496116218417-1a781b1c416c"), // momos
-  "wm-chilli": U("1607330289024-1535c6b4e1c1"), // chilli
-  "wm-hakka": U("1585032226651-759b368d7246"), // hakka noodles
+  "wm-garlic": "https://images.pexels.com/photos/34170981/pexels-photo-34170981.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "wm-spring": "https://images.pexels.com/photos/15801051/pexels-photo-15801051.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "wm-momos": "https://images.pexels.com/photos/28445589/pexels-photo-28445589.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "wm-chilli": "https://images.pexels.com/photos/28674534/pexels-photo-28674534.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "wm-hakka": "https://images.pexels.com/photos/34170982/pexels-photo-34170982.jpeg?auto=compress&cs=tinysrgb&w=900",
   // Dadi Ki Rasoi
-  "dr-dal": U("1585937421612-70a008356fbe"), // dal
-  "dr-rajma": U("1606491956689-2ea866880c84"), // rajma
-  "dr-chole": U("1606491956689-2ea866880c84"), // chole
-  "dr-paneer": U("1606491956689-2ea866880c84"), // paneer rice (rajma/chole family, confirmed 200)
-  "dr-pulao": U("1516714435131-44d6b64dc6a2"), // veg pulao
+  "dr-dal": "https://images.pexels.com/photos/28674708/pexels-photo-28674708.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "dr-rajma": "https://images.pexels.com/photos/12737912/pexels-photo-12737912.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "dr-chole": LOCAL("chole_chawal"), // replaced (was wrong)
+  "dr-paneer": LOCAL("paneer_curry_rice"), // replaced (was wrong)
+  "dr-pulao": LOCAL("veg_pulao"), // replaced (was wrong)
   // Anna's Tiffin House
-  "at-dosa": U("1668236543090-82eba5ee5976"), // dosa
-  "at-idli": U("1668236543090-82eba5ee5976"), // idli (reuse dosa family)
-  "at-vada": U("1668236543090-82eba5ee5976"), // vada (dosa family, confirmed 200)
-  "at-coffee": U("1571934811356-5cc061b6821f"), // filter coffee
-  "at-upma": U("1639024471283-03518883512d"), // upma (reuse raita-ish)
+  "at-dosa": "https://images.pexels.com/photos/20422138/pexels-photo-20422138.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "at-idli": "https://images.pexels.com/photos/35514447/pexels-photo-35514447.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "at-vada": "https://images.unsplash.com/photo-1756757077703-26dc3ba7e853?auto=format&fit=crop&w=900&q=80",
+  "at-coffee": "https://images.unsplash.com/photo-1758387941825-a6ecaec9c14d?auto=format&fit=crop&w=900&q=80",
+  "at-upma": LOCAL("at-upma"),
   // Burger & Co.
-  "bc-potato": U("1568901346375-23c9450c58cd"), // potato burger
-  "bc-chicken": U("1550547660-d9450f859349"), // chicken burger
-  "bc-fries": U("1573080496219-bb080dd4f877"), // cheese fries
-  "bc-wings": U("1608039755401-742074f0548d"), // wings
-  "bc-wrap": U("1626700051175-6818013e1d4f"), // veg wrap
+  "bc-potato": "https://images.pexels.com/photos/29268293/pexels-photo-29268293.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "bc-chicken": "https://images.pexels.com/photos/8130750/pexels-photo-8130750.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "bc-fries": "https://images.pexels.com/photos/27758758/pexels-photo-27758758.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "bc-wings": LOCAL("bc-wings"),
+  "bc-wrap": "https://images.pexels.com/photos/34644336/pexels-photo-34644336.jpeg?auto=compress&cs=tinysrgb&w=900",
   // The Sweet Tooth
-  "st-brownie": U("1606313564200-e75d5e30476c"), // brownie
-  "st-gulab": U("1601050690597-df0568f70950"), // gulab jamun (reuse)
-  "st-mousse": U("1606313564200-e75d5e30476c"), // mousse (reuse)
-  "st-sundae": U("1488900128323-21503983a07e"), // sundae
-  "st-cheesecake": U("1533134242443-d4fd215305ad"), // cheesecake
+  "st-brownie": "https://images.pexels.com/photos/23826283/pexels-photo-23826283.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "st-gulab": LOCAL("st-gulab"),
+  "st-mousse": LOCAL("st-mousse"),
+  "st-sundae": "https://images.pexels.com/photos/12941956/pexels-photo-12941956.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "st-cheesecake": "https://images.unsplash.com/photo-1702925614886-50ad13c88d3f?auto=format&fit=crop&w=900&q=80",
   // The Chai Tapri
-  "ct-kulcha": U("1601050690117-94f5f6fa8bd7"), // kulcha omelette
-  "ct-bun": U("1509440159596-0249088772ff"), // bun maska
-  "ct-chai": U("1571934811356-5cc061b6821f"), // chai
-  "ct-maggi": U("1606491956689-2ea866880c84"), // maggi
-  "ct-sandwich": U("1528735602780-2552fd46c7af"), // sandwich
+  "ct-kulcha": LOCAL("ct-kulcha"),
+  "ct-bun": LOCAL("ct-bun"),
+  "ct-chai": "https://images.pexels.com/photos/37186989/pexels-photo-37186989.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "ct-maggi": "https://images.pexels.com/photos/10913411/pexels-photo-10913411.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "ct-sandwich": "https://images.unsplash.com/photo-1528736235302-52922df5c122?auto=format&fit=crop&w=900&q=80",
   // The Green Bowl
-  "gb-salad": U("1512621776951-a57141f2eefd"), // salad
-  "gb-quinoa": U("1540420773420-3366772f4999"), // quinoa bowl
-  "gb-breast": U("1532550907401-a500c9a57435"), // grilled chicken
-  "gb-egg": U("1608039755401-742074f0548d"), // egg bowl
-  "gb-oats": U("1517673132405-a56a62b18caf"), // oats bowl
+  "gb-salad": "https://images.pexels.com/photos/19938473/pexels-photo-19938473.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "gb-quinoa": "https://images.pexels.com/photos/9258710/pexels-photo-9258710.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "gb-breast": "https://images.pexels.com/photos/37575745/pexels-photo-37575745.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "gb-egg": "https://images.pexels.com/photos/36583482/pexels-photo-36583482.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "gb-oats": LOCAL("gb-oats"),
 };

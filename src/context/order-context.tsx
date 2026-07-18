@@ -4,7 +4,7 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, 
 import { getRestaurant } from "@/data/catalog";
 import { track } from "@/lib/analytics";
 import { Bill, CartLine, DeliveryMode, DemoOrder, PaymentMethod } from "@/lib/types";
-import { getActiveOrder, getHistory, saveActiveOrder, saveHistory } from "@/lib/storage";
+import { getActiveOrder, getCart, getHistory, saveActiveOrder, saveCart, saveHistory } from "@/lib/storage";
 
 type OrderContextValue = {
   cart: CartLine[];
@@ -46,10 +46,15 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    setCart(getCart());
     setActiveOrder(getActiveOrder());
     setHistory(getHistory());
     setHydrated(true);
   }, []);
+
+  useEffect(() => {
+    if (hydrated) saveCart(cart);
+  }, [cart, hydrated]);
 
   const addItem = useCallback((restaurantId: string, dishId: string) => {
     setCart((current) => {

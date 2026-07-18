@@ -1,9 +1,10 @@
-import { DemoOrder } from "@/lib/types";
+import { CartLine, DemoOrder } from "@/lib/types";
 
 const HISTORY_KEY = "otfna.history.v1";
 const ACTIVE_ORDER_KEY = "otfna.active-order.v1";
 const DEVICE_KEY = "otfna.device.v1";
 const VISIT_KEY = "otfna.last-visit.v1";
+const CART_KEY = "otfna.cart.v1";
 
 const canUseStorage = () => typeof window !== "undefined";
 
@@ -41,4 +42,15 @@ export const markVisit = () => {
   const previous = localStorage.getItem(VISIT_KEY);
   localStorage.setItem(VISIT_KEY, new Date().toISOString());
   return Boolean(previous);
+};
+
+export const getCart = (): CartLine[] => {
+  if (!canUseStorage()) return [];
+  try { return JSON.parse(localStorage.getItem(CART_KEY) ?? "[]") as CartLine[]; } catch { return []; }
+};
+
+export const saveCart = (cart: CartLine[]) => {
+  if (!canUseStorage()) return;
+  if (cart.length) localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  else localStorage.removeItem(CART_KEY);
 };
