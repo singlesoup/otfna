@@ -90,7 +90,8 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
 
   const completeOrder = () => {
     if (!activeOrder) return null;
-    const completed = { ...activeOrder, completedAt: activeOrder.completedAt ?? new Date().toISOString() };
+    if (activeOrder.completedAt) return activeOrder; // idempotent: already completed
+    const completed = { ...activeOrder, completedAt: new Date().toISOString() };
     const next = history.some((order) => order.id === completed.id) ? history : [completed, ...history];
     setActiveOrder(completed);
     setHistory(next);

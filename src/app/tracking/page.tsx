@@ -16,6 +16,7 @@ export default function TrackingPage() {
   const { activeOrder, hydrated, completeOrder } = useOrder();
   const [now, setNow] = useState(() => Date.now());
   const started = useRef(false);
+  const completedRef = useRef(false);
 
   const elapsed = activeOrder ? Math.max(0, (now - new Date(activeOrder.placedAt).getTime()) / 1000) : 0;
   const progress = activeOrder ? Math.min(1, elapsed / activeOrder.durationSeconds) : 0;
@@ -31,13 +32,22 @@ export default function TrackingPage() {
     return () => window.clearInterval(timer);
   }, [activeOrder, hydrated, router]);
 
+  // Mark the order complete the moment the simulated timer hits 100%.
   useEffect(() => {
-    if (!activeOrder || progress < 1) return;
+    if (!activeOrder || progress < 1 || completedRef.current) return;
+    completedRef.current = true;
     completeOrder();
     track("tracking_completed", { mode: activeOrder.mode });
+  }, [activeOrder, progress, completeOrder]);
+
+  // Once marked complete, navigate to the savings / delivered page.
+  // Separate effect so the navigation timeout is not cancelled by the
+  // completion effect re-running when completeOrder() mutates activeOrder.
+  useEffect(() => {
+    if (!activeOrder?.completedAt) return;
     const timer = window.setTimeout(() => router.replace("/delivered"), 700);
     return () => window.clearTimeout(timer);
-  }, [progress, activeOrder, completeOrder, router]);
+  }, [activeOrder?.completedAt, router]);
 
   if (!activeOrder) return <main className="min-h-screen bg-white" data-testid="tracking-loading-page" />;
 

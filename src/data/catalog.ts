@@ -1,4 +1,5 @@
 import { Restaurant } from "@/lib/types";
+import { dishImages } from "@/data/dish-images";
 
 const images = {
   biryani: "https://images.pexels.com/photos/9743517/pexels-photo-9743517.jpeg?auto=compress&cs=tinysrgb&w=900",
@@ -14,7 +15,7 @@ const images = {
 };
 
 const dish = (id: string, name: string, price: number, veg: boolean, image: string, description: string) => ({
-  id, name, price, veg, image, description, rating: Number((4.1 + (id.length % 7) / 10).toFixed(1)),
+  id, name, price, veg, image: dishImages[id] ?? image, description, rating: Number((4.1 + (id.length % 7) / 10).toFixed(1)),
 });
 
 export const categories = ["All", "Biryani", "Pizza", "Rolls", "Chinese", "North Indian", "South Indian", "Burgers", "Desserts", "Cafe", "Healthy"];
