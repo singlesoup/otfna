@@ -8,6 +8,7 @@ const CART_KEY = "otfna.cart.v1";
 const GOAL_KEY = "otfna.goal.v1";
 const RECIPES_KEY = "otfna.recipes.v1";
 const STREAK_KEY = "otfna.streak.v1";
+const OFFER_TIMER_KEY = "otfna.offertimer.v1";
 
 const canUseStorage = () => typeof window !== "undefined";
 
@@ -151,4 +152,24 @@ export const getStreak = (): StreakState => {
 
 export const saveStreak = (state: StreakState) => {
   if (canUseStorage()) localStorage.setItem(STREAK_KEY, JSON.stringify(state));
+};
+
+export type OfferTimerState = {
+  endTime: number;
+  expired: boolean;
+};
+
+export const getOfferTimer = (): OfferTimerState => {
+  if (!canUseStorage()) return { endTime: 0, expired: false };
+  try {
+    const stored = localStorage.getItem(OFFER_TIMER_KEY);
+    if (stored) return JSON.parse(stored) as OfferTimerState;
+  } catch {
+    // ignore corrupted storage
+  }
+  return { endTime: 0, expired: false };
+};
+
+export const saveOfferTimer = (state: OfferTimerState) => {
+  if (canUseStorage()) localStorage.setItem(OFFER_TIMER_KEY, JSON.stringify(state));
 };

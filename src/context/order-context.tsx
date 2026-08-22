@@ -49,7 +49,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const [history, setHistory] = useState<DemoOrder[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [goal, setGoal] = useState<string | null>(null);
-    const [hunger, setHunger] = useState<number>(3);
+  const [hunger, setHunger] = useState<number>(3);
 
     useEffect(() => {
     setCart(getCart());

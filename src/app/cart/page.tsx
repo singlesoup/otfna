@@ -8,15 +8,56 @@ import { BillBreakdown } from "@/components/bill-breakdown";
 import { QuantityStepper } from "@/components/quantity-stepper";
 import { useOrder } from "@/context/order-context";
 import { getRestaurant } from "@/data/catalog";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { track } from "@/lib/analytics";
+import { getOfferTimer, saveOfferTimer } from "@/lib/storage";
+
+const OFFER_DURATION_MS = 15 * 60 * 1000; // 15 minutes
 
 export default function CartPage() {
   const { cart, bill, couponApplied, mode, setMode, addItem, removeItem, applyCoupon } = useOrder();
   const restaurant = getRestaurant(cart[0]?.restaurantId);
-  useEffect(() => { track("cart_viewed", { item_count: cart.reduce((sum, line) => sum + line.quantity, 0) }); }, []);
+  const [offerTimer, setOfferTimer] = useState({ endTime: 0, expired: false });
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    track("cart_viewed", { item_count: cart.reduce((sum, line) => sum + line.quantity, 0) });
+  }, []);
+
+  useEffect(() => {
+    const timer = getOfferTimer();
+    if (timer.endTime === 0 || timer.expired) {
+      // Start a new timer
+      const newEndTime = Date.now() + OFFER_DURATION_MS;
+      const newState = { endTime: newEndTime, expired: false };
+      saveOfferTimer(newState);
+      setOfferTimer(newState);
+    } else {
+      setOfferTimer(timer);
+    }
+  }, []);
+
+  useEffect(() => {
+      if (offerTimer.endTime === 0) return;
+      const interval = setInterval(() => {
+        setNow(Date.now());
+        const remaining = offerTimer.endTime - Date.now();
+        if (remaining <= 0) {
+          const expiredState = { endTime: offerTimer.endTime, expired: true };
+          saveOfferTimer(expiredState);
+          setOfferTimer(expiredState);
+        }
+      }, 1000);
+      return () => clearInterval(interval);
+    }, [offerTimer.endTime]);
 
   if (!cart.length || !restaurant) return <main className="min-h-screen bg-white" data-testid="empty-cart-page"><AppHeader backHref="/" title="Your cart" compact /><div className="grid min-h-[70vh] place-items-center p-8 text-center"><div><span className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-amber-50 text-mango"><Sparkles size={26} /></span><h1 className="mt-5 text-2xl font-extrabold">Your cart is taking it easy.</h1><p className="mt-2 text-sm text-neutral-500">Add something you nearly wanted.</p><Link href="/" className="mt-6 inline-flex rounded-xl bg-charcoal px-5 py-3 text-sm font-bold text-white" data-testid="empty-cart-browse-link">Browse restaurants</Link></div></div></main>;
+
+  const remaining = offerTimer.endTime > 0 ? Math.max(0, offerTimer.endTime - now) : 0;
+  const hours = Math.floor(remaining / 3600000);
+  const minutes = Math.floor((remaining % 3600000) / 60000);
+  const seconds = Math.floor((remaining % 60000) / 1000);
+  const formatted = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
   return (
     <main className="min-h-screen bg-canvas pb-28" data-testid="cart-page">
@@ -46,7 +87,15 @@ export default function CartPage() {
           </div>
         </section>
         <BillBreakdown bill={bill} />
-      </div>
+
+                <section className="rounded-2xl bg-white p-5 shadow-card" data-testid="offer-timer-section">
+                  {offerTimer.expired ? (
+                    <p className="text-sm text-neutral-500" data-testid="offer-timer-expired">Offer expired — check back soon for a new one</p>
+                  ) : (
+                    <p className="text-sm font-bold text-amber-800" data-testid="offer-timer-active">Limited-time offer: Free delivery on your next order — expires in {formatted}</p>
+                  )}
+                </section>
+              </div>
       <div className="safe-bottom fixed bottom-0 z-30 w-full max-w-[30rem] border-t border-neutral-100 bg-white px-4 pt-3 shadow-[0_-12px_30px_-25px_rgba(0,0,0,.4)]">
         <Link href="/checkout" className="flex h-14 items-center justify-between rounded-2xl bg-charcoal px-5 font-extrabold text-white transition-transform active:scale-[.98]" data-testid="proceed-checkout-link"><span><small className="mr-2 font-medium text-white/50">₹{bill.total}</small> Proceed</span><ChevronRight size={19} /></Link>
       </div>
