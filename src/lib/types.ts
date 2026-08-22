@@ -1,5 +1,6 @@
 export type DeliveryMode = "vip" | "standard";
 export type PaymentMethod = "UPI" | "Card" | "COD" | "Wallet";
+export type HungerLevel = 0 | 1 | 2 | 3 | 4 | 5;
 
 export type Dish = {
   id: string;
@@ -61,4 +62,5 @@ export type DemoOrder = {
   durationSeconds: number;
   completedAt?: string;
   feedback?: "yes" | "no";
+  hunger?: number;
 };

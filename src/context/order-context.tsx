@@ -3,8 +3,8 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { getRestaurant } from "@/data/catalog";
 import { track } from "@/lib/analytics";
-import { Bill, CartLine, DeliveryMode, DemoOrder, PaymentMethod } from "@/lib/types";
-import { getActiveOrder, getCart, getGoal, getHistory, saveActiveOrder, saveCart, saveGoal, saveHistory } from "@/lib/storage";
+import { Bill, CartLine, DemoOrder, DeliveryMode, HungerLevel, PaymentMethod } from "@/lib/types";
+import { getActiveOrder, getCart, getGoal, getHistory, saveActiveOrder, saveCart, saveGoal, saveHistory, getStreak, saveStreak } from "@/lib/storage";
 
 type OrderContextValue = {
   cart: CartLine[];
@@ -13,6 +13,8 @@ type OrderContextValue = {
   activeOrder: DemoOrder | null;
   history: DemoOrder[];
   hydrated: boolean;
+  hunger: number;
+  setHunger: (n: number) => void;
   setMode: (mode: DeliveryMode) => void;
   addItem: (restaurantId: string, dishId: string) => void;
   removeItem: (restaurantId: string, dishId: string) => void;
@@ -47,8 +49,9 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const [history, setHistory] = useState<DemoOrder[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [goal, setGoal] = useState<string | null>(null);
+    const [hunger, setHunger] = useState<number>(3);
 
-  useEffect(() => {
+    useEffect(() => {
     setCart(getCart());
     setActiveOrder(getActiveOrder());
     setHistory(getHistory());
@@ -84,10 +87,11 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     const restaurant = getRestaurant(cart[0]?.restaurantId);
     if (!restaurant || !cart.length) return null;
     const order: DemoOrder = {
-      id: crypto.randomUUID(), restaurantId: restaurant.id, restaurantName: restaurant.name,
-      category: restaurant.category, lines: cart, bill, mode, payment,
-      placedAt: new Date().toISOString(), durationSeconds: mode === "vip" ? 90 : 150,
-    };
+          id: crypto.randomUUID(), restaurantId: restaurant.id, restaurantName: restaurant.name,
+          category: restaurant.category, lines: cart, bill, mode, payment,
+          placedAt: new Date().toISOString(), durationSeconds: mode === "vip" ? 90 : 150,
+          hunger,
+        };
     setActiveOrder(order);
     saveActiveOrder(order);
     setCart([]);
@@ -97,16 +101,32 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const completeOrder = () => {
-    if (!activeOrder) return null;
-    if (activeOrder.completedAt) return activeOrder;
-    const completed = { ...activeOrder, completedAt: new Date().toISOString() };
-    const next = history.some((order) => order.id === completed.id) ? history : [completed, ...history];
-    setActiveOrder(completed);
-    setHistory(next);
-    saveActiveOrder(completed);
-    saveHistory(next);
-    return completed;
-  };
+      if (!activeOrder) return null;
+      if (activeOrder.completedAt) return activeOrder;
+      const completed = { ...activeOrder, completedAt: new Date().toISOString() };
+      const next = history.some((order) => order.id === completed.id) ? history : [completed, ...history];
+      setActiveOrder(completed);
+      setHistory(next);
+      saveActiveOrder(completed);
+      saveHistory(next);
+
+      // Update streak
+      const streak = getStreak();
+      const orderDate = new Date(completed.completedAt).toDateString();
+      const today = new Date().toDateString();
+      const yesterday = new Date(Date.now() - 86400000).toDateString();
+      let newStreak: typeof streak;
+      if (streak.lastOrderDate === today) {
+        newStreak = streak;
+      } else if (streak.lastOrderDate === yesterday) {
+        newStreak = { currentStreak: streak.currentStreak + 1, longestStreak: Math.max(streak.longestStreak, streak.currentStreak + 1), lastOrderDate: orderDate };
+      } else {
+        newStreak = { currentStreak: 1, longestStreak: Math.max(streak.longestStreak, 1), lastOrderDate: orderDate };
+      }
+      saveStreak(newStreak);
+
+      return completed;
+    };
 
   const recordFeedback = (value: "yes" | "no") => {
     if (!activeOrder) return;
@@ -119,7 +139,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     track("helped_response_selected", { response: value });
   };
 
-  return <OrderContext.Provider value={{ cart, mode, couponApplied, activeOrder, history, hydrated, setMode, addItem, removeItem, clearCart, applyCoupon, bill, placeOrder, completeOrder, recordFeedback, goal, selectGoal: (id: string | null) => setGoal(id) }}>{children}</OrderContext.Provider>;
+  return <OrderContext.Provider value={{ cart, mode, couponApplied, activeOrder, history, hydrated, hunger, setHunger, setMode, addItem, removeItem, clearCart, applyCoupon, bill, placeOrder, completeOrder, recordFeedback, goal, selectGoal: (id: string | null) => setGoal(id) }}>{children}</OrderContext.Provider>;
 };
 
 export const useOrder = () => {

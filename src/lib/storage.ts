@@ -7,6 +7,7 @@ const VISIT_KEY = "otfna.last-visit.v1";
 const CART_KEY = "otfna.cart.v1";
 const GOAL_KEY = "otfna.goal.v1";
 const RECIPES_KEY = "otfna.recipes.v1";
+const STREAK_KEY = "otfna.streak.v1";
 
 const canUseStorage = () => typeof window !== "undefined";
 
@@ -129,4 +130,25 @@ export const getRecipes = (): import("@/lib/types").Recipe[] => {
 
 export const saveRecipes = (recipes: import("@/lib/types").Recipe[]) => {
   if (canUseStorage()) localStorage.setItem(RECIPES_KEY, JSON.stringify(recipes));
+};
+
+export type StreakState = {
+  currentStreak: number;
+  longestStreak: number;
+  lastOrderDate: string;
+};
+
+export const getStreak = (): StreakState => {
+  if (!canUseStorage()) return { currentStreak: 0, longestStreak: 0, lastOrderDate: "" };
+  try {
+    const stored = localStorage.getItem(STREAK_KEY);
+    if (stored) return JSON.parse(stored) as StreakState;
+  } catch {
+    // ignore corrupted storage
+  }
+  return { currentStreak: 0, longestStreak: 0, lastOrderDate: "" };
+};
+
+export const saveStreak = (state: StreakState) => {
+  if (canUseStorage()) localStorage.setItem(STREAK_KEY, JSON.stringify(state));
 };
