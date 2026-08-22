@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Trophy, RotateCcw } from "lucide-react";
+import { BottomNav } from "@/components/bottom-nav";
 
 const PRIZES = [
   "Free delivery",
@@ -225,6 +226,7 @@ export default function WheelPage() {
           ← Back to home
         </button>
       </div>
+      <BottomNav />
     </main>
   );
 }

@@ -21,9 +21,11 @@ export const BottomNav = () => {
           ? pathname.startsWith("/history")
           : href === "/recipes"
             ? pathname === "/recipes" || pathname.startsWith("/recipe/")
-            : href === "/"
-              ? pathname === "/"
-              : false;
+            : href === "/wheel"
+              ? pathname.startsWith("/wheel")
+              : href === "/"
+                ? pathname === "/"
+                : false;
         return <Link key={label} href={href} className={`flex min-w-20 flex-col items-center gap-1 rounded-xl py-1.5 text-[11px] font-bold transition-colors ${active ? "text-charcoal" : "text-neutral-400 hover:text-neutral-700"}`} data-testid={`bottom-nav-${label.toLowerCase()}-link`}><Icon size={19} fill={active ? "#FFC000" : "none"} /><span>{label}</span></Link>;
       })}
     </nav>
