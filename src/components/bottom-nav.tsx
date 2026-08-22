@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Clock3, ChefHat, Home, Search } from "lucide-react";
+import { Clock3, ChefHat, Home, Search, RotateCcw } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 const items = [
   { href: "/", label: "Home", icon: Home },
+  { href: "/wheel", label: "Wheel", icon: RotateCcw },
   { href: "/recipes", label: "Recipes", icon: ChefHat },
   { href: "/history", label: "History", icon: Clock3 },
   { href: "/#search", label: "Search", icon: Search },
