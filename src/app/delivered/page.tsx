@@ -9,6 +9,16 @@ import { ShareCard } from "@/components/share-card";
 import { GoalProgress } from "@/components/goal-progress";
 import { useOrder } from "@/context/order-context";
 import { track } from "@/lib/analytics";
+import { HungerLevel } from "@/lib/types";
+
+const HUNGER_LABELS: Record<HungerLevel, string> = {
+  0: "Not hungry at all",
+  1: "A little peckish",
+  2: "Mildly hungry",
+  3: "Moderately hungry",
+  4: "Very hungry",
+  5: "Starving",
+};
 
 const suggestions: Record<string, string> = {
   Biryani: "Check the fridge for leftovers — or a quick bowl of curd rice hits the same comfort note.",
@@ -25,10 +35,11 @@ const suggestions: Record<string, string> = {
 
 export default function DeliveredPage() {
   const router = useRouter();
-  const { activeOrder, history, hydrated, goal, selectGoal, recordFeedback } = useOrder();
+  const { activeOrder, history, hydrated, goal, selectGoal, recordFeedback, hunger } = useOrder();
   const [feedback, setFeedback] = useState<"yes" | "no" | undefined>(activeOrder?.feedback);
   const totalSaved = useMemo(() => history.reduce((sum, order) => sum + order.bill.total, 0), [history]);
   const noGoal = !hydrated ? null : (goal === null || goal === undefined);
+  const deliveredHunger = (activeOrder?.hunger ?? hunger) as HungerLevel;
 
   useEffect(() => {
     if (!hydrated) return;
@@ -58,7 +69,10 @@ export default function DeliveredPage() {
       <div className="page-enter -mt-3 space-y-4 px-4">
         <section className="rounded-[1.6rem] bg-white p-6 shadow-lift" data-testid="savings-summary-card">
           <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.12em] text-neutral-400">Saved this order</p><p className="mt-2 text-5xl font-extrabold tracking-[-.05em] text-savings" data-testid="order-savings-amount">₹{activeOrder.bill.total}</p></div><Wallet className="text-mango" size={30} /></div>
-          <div className="mt-6 flex items-center justify-between border-t border-dashed border-neutral-200 pt-4"><span className="text-sm text-neutral-500">Cumulative local savings</span><strong className="text-lg text-savings" data-testid="cumulative-savings-amount">₹{totalSaved}</strong></div>
+          <div className="mt-6 flex items-center justify-between border-t border-dashed border-neutral-200 pt-4">
+                      <span className="text-sm text-neutral-500">Hunger level: <strong className="text-amber-800">{deliveredHunger} — {HUNGER_LABELS[deliveredHunger]}</strong></span>
+                      <strong className="text-lg text-savings" data-testid="cumulative-savings-amount">₹{totalSaved}</strong>
+                    </div>
         </section>
 
         {noGoal ? (

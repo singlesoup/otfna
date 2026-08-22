@@ -7,14 +7,23 @@ import { AppHeader } from "@/components/app-header";
 import { BillBreakdown } from "@/components/bill-breakdown";
 import { DemoDisclosure } from "@/components/demo-disclosure";
 import { useOrder } from "@/context/order-context";
-import { PaymentMethod } from "@/lib/types";
+import { PaymentMethod, HungerLevel } from "@/lib/types";
 import { track } from "@/lib/analytics";
 
 const methods: { name: PaymentMethod; icon: typeof Smartphone }[] = [{ name: "UPI", icon: Smartphone }, { name: "Card", icon: CreditCard }, { name: "COD", icon: Banknote }, { name: "Wallet", icon: WalletCards }];
 
+const HUNGER_LABELS: Record<HungerLevel, string> = {
+  0: "Not hungry at all",
+  1: "A little peckish",
+  2: "Mildly hungry",
+  3: "Moderately hungry",
+  4: "Very hungry",
+  5: "Starving",
+};
+
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, bill, placeOrder } = useOrder();
+  const { cart, bill, placeOrder, hunger, setHunger } = useOrder();
   const [address, setAddress] = useState("");
   const [payment, setPayment] = useState<PaymentMethod>("UPI");
   useEffect(() => { track("checkout_started", { total: bill.total }); }, []);
@@ -40,6 +49,18 @@ export default function CheckoutPage() {
         </section>
         <DemoDisclosure />
         <BillBreakdown bill={bill} />
+
+        <section className="rounded-2xl bg-white p-5 shadow-card" data-testid="hunger-picker-section">
+          <h2 className="text-base font-extrabold">How hungry are you?</h2>
+          <div className="mt-4 flex gap-2">
+            {Array.from({ length: 6 }, (_, i) => i).map((n) => (
+              <button key={n} type="button" onClick={() => setHunger(n)} className={`flex h-12 w-12 items-center justify-center rounded-full text-lg font-extrabold transition-[border-color,background-color] ${hunger === n ? "border-4 border-mango bg-amber-50 text-amber-800" : "border-neutral-200 bg-white text-neutral-500"}`} data-testid={`hunger-option-${n}`}>{n}</button>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-neutral-500">
+            {hunger === 0 && "Not hungry at all"} {hunger === 1 && "A little peckish"} {hunger === 2 && "Mildly hungry"} {hunger === 3 && "Moderately hungry"} {hunger === 4 && "Very hungry"} {hunger === 5 && "Starving"}
+          </p>
+        </section>
       </div>
       <div className="safe-bottom fixed bottom-0 z-30 w-full max-w-[30rem] border-t border-neutral-100 bg-white px-4 pt-3">
         <button onClick={submit} type="button" className="h-14 w-full rounded-2xl bg-charcoal text-sm font-extrabold text-white transition-[transform,background-color] hover:bg-black active:scale-[.98]" data-testid="place-demo-order-button">Place demo order · ₹{bill.total}</button>
