@@ -61,6 +61,7 @@ export type DemoOrder = {
   placedAt: string;
   durationSeconds: number;
   completedAt?: string;
-  feedback?: "yes" | "no";
-  hunger?: number;
-};
+    feedback?: "yes" | "no";
+    hunger?: number;
+    wheelPrize?: string;
+  };

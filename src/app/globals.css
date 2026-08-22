@@ -43,3 +43,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
     transition-duration: .01ms !important;
   }
 }
+
+@keyframes confetti {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}

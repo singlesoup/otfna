@@ -6,6 +6,7 @@ import { Check, Circle, Clock3 } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
 import { DemoDisclosure } from "@/components/demo-disclosure";
 import { TrackingMap } from "@/components/tracking-map";
+import { Wheel } from "@/components/wheel";
 import { useOrder } from "@/context/order-context";
 import { track } from "@/lib/analytics";
 
@@ -15,6 +16,8 @@ export default function TrackingPage() {
   const router = useRouter();
   const { activeOrder, hydrated, completeOrder } = useOrder();
   const [now, setNow] = useState(() => Date.now());
+  const [wheelPrize, setWheelPrize] = useState<string | null>(null);
+  const [isWheelCollapsed, setIsWheelCollapsed] = useState(false);
   const started = useRef(false);
   const completedRef = useRef(false);
 
@@ -36,9 +39,9 @@ export default function TrackingPage() {
   useEffect(() => {
     if (!activeOrder || progress < 1 || completedRef.current) return;
     completedRef.current = true;
-    completeOrder();
+    completeOrder(wheelPrize ?? undefined);
     track("tracking_completed", { mode: activeOrder.mode });
-  }, [activeOrder, progress, completeOrder]);
+  }, [activeOrder, progress, completeOrder, wheelPrize]);
 
   // Once marked complete, navigate to the savings / delivered page.
   // Separate effect so the navigation timeout is not cancelled by the
@@ -78,6 +81,13 @@ export default function TrackingPage() {
             })}
           </div>
         </section>
+
+        {/* Wheel of Fortune - shown only when progress < 1 */}
+        {progress < 1 && (
+          <section className="mt-8" data-testid="tracking-wheel-section">
+            <Wheel onWin={setWheelPrize} isCollapsed={isWheelCollapsed} onToggleCollapse={() => setIsWheelCollapsed(!isWheelCollapsed)} />
+          </section>
+        )}
       </div>
     </main>
   );

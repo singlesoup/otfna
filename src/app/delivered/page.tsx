@@ -68,12 +68,21 @@ export default function DeliveredPage() {
 
       <div className="page-enter -mt-3 space-y-4 px-4">
         <section className="rounded-[1.6rem] bg-white p-6 shadow-lift" data-testid="savings-summary-card">
-          <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.12em] text-neutral-400">Saved this order</p><p className="mt-2 text-5xl font-extrabold tracking-[-.05em] text-savings" data-testid="order-savings-amount">₹{activeOrder.bill.total}</p></div><Wallet className="text-mango" size={30} /></div>
-          <div className="mt-6 flex items-center justify-between border-t border-dashed border-neutral-200 pt-4">
-                      <span className="text-sm text-neutral-500">Hunger level: <strong className="text-amber-800">{deliveredHunger} — {HUNGER_LABELS[deliveredHunger]}</strong></span>
-                      <strong className="text-lg text-savings" data-testid="cumulative-savings-amount">₹{totalSaved}</strong>
+                  <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.12em] text-neutral-400">Saved this order</p><p className="mt-2 text-5xl font-extrabold tracking-[-.05em] text-savings" data-testid="order-savings-amount">₹{activeOrder.bill.total}</p></div><Wallet className="text-mango" size={30} /></div>
+                  {activeOrder.wheelPrize && (
+                    <div className="mt-4 flex items-center gap-3 rounded-xl bg-amber-50 p-4 border border-amber-200" data-testid="wheel-prize-card">
+                      <span className="grid h-10 w-10 place-items-center rounded-xl bg-mango text-charcoal text-xl">🎁</span>
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-[.12em] text-amber-800">Wheel prize</p>
+                        <p className="font-extrabold text-charcoal">{activeOrder.wheelPrize}</p>
+                      </div>
                     </div>
-        </section>
+                  )}
+                  <div className="mt-6 flex items-center justify-between border-t border-dashed border-neutral-200 pt-4">
+                              <span className="text-sm text-neutral-500">Hunger level: <strong className="text-amber-800">{deliveredHunger} — {HUNGER_LABELS[deliveredHunger]}</strong></span>
+                              <strong className="text-lg text-savings" data-testid="cumulative-savings-amount">₹{totalSaved}</strong>
+                            </div>
+                </section>
 
         {noGoal ? (
           <section className="rounded-[1.6rem] border-2 border-dashed border-mango/40 bg-[#FFF8DE] p-6" data-testid="goal-picker-section">

@@ -22,7 +22,7 @@ type OrderContextValue = {
   applyCoupon: () => void;
   bill: Bill;
   placeOrder: (payment: PaymentMethod) => DemoOrder | null;
-  completeOrder: () => DemoOrder | null;
+  completeOrder: (wheelPrize?: string) => DemoOrder | null;
   recordFeedback: (value: "yes" | "no") => void;
   goal: string | null;
   selectGoal: (id: string | null) => void;
@@ -100,15 +100,15 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     return order;
   };
 
-  const completeOrder = () => {
-      if (!activeOrder) return null;
-      if (activeOrder.completedAt) return activeOrder;
-      const completed = { ...activeOrder, completedAt: new Date().toISOString() };
-      const next = history.some((order) => order.id === completed.id) ? history : [completed, ...history];
-      setActiveOrder(completed);
-      setHistory(next);
-      saveActiveOrder(completed);
-      saveHistory(next);
+  const completeOrder = (wheelPrize?: string) => {
+        if (!activeOrder) return null;
+        if (activeOrder.completedAt) return activeOrder;
+        const completed = { ...activeOrder, completedAt: new Date().toISOString(), wheelPrize };
+        const next = history.some((order) => order.id === completed.id) ? history : [completed, ...history];
+        setActiveOrder(completed);
+        setHistory(next);
+        saveActiveOrder(completed);
+        saveHistory(next);
 
       // Update streak
       const streak = getStreak();
