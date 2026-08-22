@@ -24,7 +24,21 @@ export type Restaurant = {
   dishes: Dish[];
 };
 
-export type CartLine = { restaurantId: string; dishId: string; quantity: number };
+export type Recipe = {
+  id: string;
+  slug: string;
+  title: string;
+  category: string;
+  image: string;
+  rating: number;
+  ingredients: string;
+  instructions: string;
+  steamingTimeMinutes: number;
+  servings: number;
+  difficulty: "Easy" | "Medium" | "Hard";
+};
+
+export type CartLine = { restaurantId: string; dishId: string; quantity: number; };
 
 export type Bill = {
   itemTotal: number;
