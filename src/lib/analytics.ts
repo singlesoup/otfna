@@ -4,7 +4,8 @@ export type AnalyticsEvent =
   | "app_opened" | "restaurant_viewed" | "item_added_to_cart" | "cart_viewed"
   | "checkout_started" | "demo_order_placed" | "tracking_started" | "tracking_completed"
   | "savings_shown" | "home_food_suggestion_shown" | "helped_response_selected"
-  | "share_card_created" | "share_card_shared" | "return_visit_detected";
+  | "share_card_created" | "share_card_shared" | "return_visit_detected"
+  | "goal_selected";
 
 let ready = false;
 

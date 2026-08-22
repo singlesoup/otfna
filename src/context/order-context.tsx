@@ -4,7 +4,7 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, 
 import { getRestaurant } from "@/data/catalog";
 import { track } from "@/lib/analytics";
 import { Bill, CartLine, DeliveryMode, DemoOrder, PaymentMethod } from "@/lib/types";
-import { getActiveOrder, getCart, getHistory, saveActiveOrder, saveCart, saveHistory } from "@/lib/storage";
+import { getActiveOrder, getCart, getGoal, getHistory, saveActiveOrder, saveCart, saveGoal, saveHistory } from "@/lib/storage";
 
 type OrderContextValue = {
   cart: CartLine[];
@@ -22,6 +22,8 @@ type OrderContextValue = {
   placeOrder: (payment: PaymentMethod) => DemoOrder | null;
   completeOrder: () => DemoOrder | null;
   recordFeedback: (value: "yes" | "no") => void;
+  goal: string | null;
+  selectGoal: (id: string | null) => void;
 };
 
 const OrderContext = createContext<OrderContextValue | null>(null);
@@ -44,17 +46,18 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const [activeOrder, setActiveOrder] = useState<DemoOrder | null>(null);
   const [history, setHistory] = useState<DemoOrder[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [goal, setGoal] = useState<string | null>(null);
 
   useEffect(() => {
     setCart(getCart());
     setActiveOrder(getActiveOrder());
     setHistory(getHistory());
+    setGoal(getGoal());
     setHydrated(true);
   }, []);
 
-  useEffect(() => {
-    if (hydrated) saveCart(cart);
-  }, [cart, hydrated]);
+  useEffect(() => { if (hydrated) saveCart(cart); }, [cart, hydrated]);
+  useEffect(() => { if (hydrated && goal !== null) saveGoal(goal); }, [goal, hydrated]);
 
   const addItem = useCallback((restaurantId: string, dishId: string) => {
     setCart((current) => {
@@ -95,7 +98,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
 
   const completeOrder = () => {
     if (!activeOrder) return null;
-    if (activeOrder.completedAt) return activeOrder; // idempotent: already completed
+    if (activeOrder.completedAt) return activeOrder;
     const completed = { ...activeOrder, completedAt: new Date().toISOString() };
     const next = history.some((order) => order.id === completed.id) ? history : [completed, ...history];
     setActiveOrder(completed);
@@ -116,7 +119,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     track("helped_response_selected", { response: value });
   };
 
-  return <OrderContext.Provider value={{ cart, mode, couponApplied, activeOrder, history, hydrated, setMode, addItem, removeItem, clearCart, applyCoupon, bill, placeOrder, completeOrder, recordFeedback }}>{children}</OrderContext.Provider>;
+  return <OrderContext.Provider value={{ cart, mode, couponApplied, activeOrder, history, hydrated, setMode, addItem, removeItem, clearCart, applyCoupon, bill, placeOrder, completeOrder, recordFeedback, goal, selectGoal: (id: string | null) => setGoal(id) }}>{children}</OrderContext.Provider>;
 };
 
 export const useOrder = () => {

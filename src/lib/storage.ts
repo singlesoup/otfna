@@ -5,6 +5,7 @@ const ACTIVE_ORDER_KEY = "otfna.active-order.v1";
 const DEVICE_KEY = "otfna.device.v1";
 const VISIT_KEY = "otfna.last-visit.v1";
 const CART_KEY = "otfna.cart.v1";
+const GOAL_KEY = "otfna.goal.v1";
 
 const canUseStorage = () => typeof window !== "undefined";
 
@@ -23,9 +24,10 @@ export const getActiveOrder = (): DemoOrder | null => {
 };
 
 export const saveActiveOrder = (order: DemoOrder | null) => {
-  if (!canUseStorage()) return;
-  if (order) localStorage.setItem(ACTIVE_ORDER_KEY, JSON.stringify(order));
-  else localStorage.removeItem(ACTIVE_ORDER_KEY);
+  if (canUseStorage()) {
+    if (order) localStorage.setItem(ACTIVE_ORDER_KEY, JSON.stringify(order));
+    else localStorage.removeItem(ACTIVE_ORDER_KEY);
+  }
 };
 
 export const getDeviceId = () => {
@@ -50,7 +52,22 @@ export const getCart = (): CartLine[] => {
 };
 
 export const saveCart = (cart: CartLine[]) => {
-  if (!canUseStorage()) return;
-  if (cart.length) localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  else localStorage.removeItem(CART_KEY);
+  if (canUseStorage()) {
+    if (cart.length) localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    else localStorage.removeItem(CART_KEY);
+  }
+};
+
+export const getGoal = (): string | null => {
+  if (!canUseStorage()) return null;
+  const existing = localStorage.getItem(GOAL_KEY);
+  if (!existing) return null;
+  try { return JSON.parse(existing) as string | null; } catch { return null; }
+};
+
+export const saveGoal = (goal: string | null) => {
+  if (canUseStorage()) {
+    if (goal) localStorage.setItem(GOAL_KEY, JSON.stringify(goal));
+    else localStorage.removeItem(GOAL_KEY);
+  }
 };

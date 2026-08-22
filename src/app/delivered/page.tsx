@@ -4,7 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Check, Home, ThumbsDown, ThumbsUp, Wallet } from "lucide-react";
+import { Goal, goalBySlug, goals } from "@/data/goals";
 import { ShareCard } from "@/components/share-card";
+import { GoalProgress } from "@/components/goal-progress";
 import { useOrder } from "@/context/order-context";
 import { track } from "@/lib/analytics";
 
@@ -23,9 +25,10 @@ const suggestions: Record<string, string> = {
 
 export default function DeliveredPage() {
   const router = useRouter();
-  const { activeOrder, history, hydrated, recordFeedback } = useOrder();
+  const { activeOrder, history, hydrated, goal, selectGoal, recordFeedback } = useOrder();
   const [feedback, setFeedback] = useState<"yes" | "no" | undefined>(activeOrder?.feedback);
   const totalSaved = useMemo(() => history.reduce((sum, order) => sum + order.bill.total, 0), [history]);
+  const noGoal = !hydrated ? null : (goal === null || goal === undefined);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -36,6 +39,11 @@ export default function DeliveredPage() {
 
   if (!activeOrder?.completedAt) return <main className="min-h-screen bg-white" data-testid="delivered-loading-page" />;
   const respond = (value: "yes" | "no") => { setFeedback(value); recordFeedback(value); };
+
+  const pickGoal = (id: string) => {
+    track("goal_selected", { goal_id: id });
+    selectGoal(id);
+  };
 
   return (
     <main className="min-h-screen bg-[#F8F7F2] pb-10" data-testid="delivered-page">
@@ -52,6 +60,26 @@ export default function DeliveredPage() {
           <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.12em] text-neutral-400">Saved this order</p><p className="mt-2 text-5xl font-extrabold tracking-[-.05em] text-savings" data-testid="order-savings-amount">₹{activeOrder.bill.total}</p></div><Wallet className="text-mango" size={30} /></div>
           <div className="mt-6 flex items-center justify-between border-t border-dashed border-neutral-200 pt-4"><span className="text-sm text-neutral-500">Cumulative local savings</span><strong className="text-lg text-savings" data-testid="cumulative-savings-amount">₹{totalSaved}</strong></div>
         </section>
+
+        {noGoal ? (
+          <section className="rounded-[1.6rem] border-2 border-dashed border-mango/40 bg-[#FFF8DE] p-6" data-testid="goal-picker-section">
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-mango text-charcoal"><Wallet size={19} /></span>
+            <p className="mt-4 text-[11px] font-bold uppercase tracking-[.13em] text-amber-800">Pick what you're saving for</p>
+            <h2 className="mt-1 text-lg font-extrabold">What's the goal?</h2>
+            <p className="mt-2 text-sm leading-relaxed text-neutral-600">Every demo order you fake-save gets you closer to one of these. Pick one and it sticks across reloads.</p>
+            <div className="mt-5 grid gap-3">
+              {goals.map((g) => (
+                <button key={g.id} onClick={() => pickGoal(g.id)} type="button" className="flex items-center gap-4 rounded-xl border border-neutral-200 bg-white p-4 text-left transition-[background-color,border-color,transform] active:scale-[.98] hover:border-mango/40" data-testid={`goal-option-${g.id}`}>
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full text-xl" style={{ backgroundColor: g.color }}>{g.emoji}</span>
+                  <div className="flex-1"><p className="font-extrabold" data-testid={`goal-option-name-${g.id}`}>{g.name}</p><p className="text-sm text-neutral-500">₹{g.targetAmount.toLocaleString("en-IN")} target</p></div>
+                  <span className="text-sm font-bold text-mango">Pick</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        ) : (
+          <GoalProgress />
+        )}
 
         <section className="rounded-[1.6rem] border border-mango/25 bg-[#FFF8DE] p-5" data-testid="home-food-suggestion-card">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-mango text-charcoal"><Home size={19} /></span>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, CalendarDays, PiggyBank, ReceiptText } from "lucide-react";
+import { GoalProgress } from "@/components/goal-progress";
 import { AppHeader } from "@/components/app-header";
 import { BottomNav } from "@/components/bottom-nav";
 import { useOrder } from "@/context/order-context";
@@ -20,6 +21,8 @@ export default function HistoryPage() {
           <p className="relative mt-2 text-5xl font-extrabold tracking-[-.05em] text-mango" data-testid="history-total-saved">₹{total}</p>
           <div className="relative mt-6 flex gap-8 border-t border-white/10 pt-4"><div><strong className="text-xl" data-testid="history-order-count">{history.length}</strong><p className="text-xs text-white/45">Demo orders</p></div><div><strong className="text-xl">₹{history.length ? Math.round(total / history.length) : 0}</strong><p className="text-xs text-white/45">Average saved</p></div></div>
         </section>
+
+        <GoalProgress />
 
         <section className="mt-8" data-testid="history-list-section">
           <div className="mb-4 flex items-center justify-between"><div><p className="text-[11px] font-bold uppercase tracking-[.14em] text-neutral-400">On this device</p><h1 className="mt-1 text-xl font-extrabold">Your demo orders</h1></div><ReceiptText className="text-neutral-300" size={24} /></div>
